@@ -274,7 +274,6 @@ function levels(){if(!conv)return;const bars=[...$("bars").children];
 async function start(){
   setMode("conn");$("st").textContent="מתחברת…";$("cap").textContent="";
   try{
-    await navigator.mediaDevices.getUserMedia({audio:true});
     conv=await Conversation.startSession({agentId:AGENT,connectionType:"webrtc",dynamicVariables:{parent,hello},
       onConnect:()=>{t0=Date.now();tick();tmr=setInterval(tick,1000);setMode("speaking");$("st").textContent="היועצת מדברת";levels()},
       onModeChange:({mode})=>{if(ended)return;if(mode==="speaking"){setMode("speaking");$("st").textContent="היועצת מדברת";$("core").style.transform=""}else{setMode("listening");$("st").textContent="מקשיבה לך";$("core").style.transform=""}},
