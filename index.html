@@ -278,7 +278,7 @@ async function start(){
     conv=await Conversation.startSession({agentId:AGENT,connectionType:"webrtc",dynamicVariables:{parent,hello},
       onConnect:()=>{t0=Date.now();tick();tmr=setInterval(tick,1000);setMode("speaking");$("st").textContent="היועצת מדברת";levels()},
       onModeChange:({mode})=>{if(ended)return;if(mode==="speaking"){setMode("speaking");$("st").textContent="היועצת מדברת";$("core").style.transform=""}else{setMode("listening");$("st").textContent="מקשיבה לך";$("core").style.transform=""}},
-      onMessage:(m)=>{const src=m.source||m.role;if(src==="ai"||src==="agent")$("cap").textContent=String(m.message||"").replace(/\[[^\]]*\]/g,"").trim()},
+      
       onDisconnect:()=>finish(),
       onError:(e)=>{console.error(e)}});
   }catch(e){console.error(e);setMode("idle");$("st").textContent=e&&e.name==="NotAllowedError"?"צריך לאשר את המיקרופון – לחצו כדי לנסות שוב":"לחצו על העיגול כדי להתחיל";}
