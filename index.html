@@ -4,7 +4,7 @@
 <title>יועצת השינה</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:#13284A;color:#fff;font-family:-apple-system,"Heebo",system-ui,sans-serif;touch-action:manipulation}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:#13284A;color:#fff;font-family:-apple-system,"Heebo",system-ui,sans-serif;touch-action:manipulation}
 #bg{position:fixed;inset:0}#bg svg{width:100%;height:100%;display:block}
 .top{position:fixed;top:calc(22px + env(safe-area-inset-top));left:0;right:0;text-align:center;z-index:3}
 .top b{display:block;font-size:15px;opacity:.85;font-weight:600}.top span{display:block;font-size:13px;opacity:.6;margin-top:2px;font-variant-numeric:tabular-nums;min-height:16px}
@@ -285,4 +285,4 @@ async function start(){
 $("orb").onclick=()=>{if(B.classList.contains("idle"))start()};
 $("end").onclick=async()=>{try{await conv?.endSession()}catch(_){}finish()};
 start();
-</script></body></html>
+</script><script>["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});</script></body></html>
