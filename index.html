@@ -273,6 +273,7 @@ function levels(){if(!conv)return;const bars=[...$("bars").children];
     else if(B.classList.contains("speaking")){const v=conv.getOutputVolume?conv.getOutputVolume():0;$("core").style.transform="scale("+(0.9+Math.min(.35,v*.8))+")"}}catch(_){}
   raf=requestAnimationFrame(levels)}
 async function start(){
+  if(window.top!==window.self){setMode("idle");$("st").textContent="פותחים את השיחה מתוך האפליקציה";return}
   if(!FK){setMode("idle");$("st").textContent="פותחים את השיחה מתוך האפליקציה";$("cap").textContent="";return}
   setMode("conn");$("st").textContent="מתחברת…";$("cap").textContent="";
   try{
