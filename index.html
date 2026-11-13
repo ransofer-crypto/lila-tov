@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="he" dir="rtl" style="background:#13284A"><head><meta charset="utf-8"><meta name="color-scheme" content="dark"><link rel="preconnect" href="https://esm.sh" crossorigin><link rel="preconnect" href="https://api.elevenlabs.io" crossorigin><link rel="modulepreload" href="https://esm.sh/@elevenlabs/client@0">
+<!DOCTYPE html><html lang="he" dir="rtl" style="background:#13284A"><head><meta charset="utf-8"><meta name="color-scheme" content="dark"><link rel="preconnect" href="https://esm.sh" crossorigin><link rel="preconnect" href="https://api.elevenlabs.io" crossorigin><link rel="modulepreload" href="https://esm.sh/@elevenlabs/client@0.16.0">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#13284A">
 <title>יועצת השינה</title>
@@ -254,11 +254,12 @@ const h=new Date().getHours(),T=h>=5&&h<10?"morning":h>=10&&h<16?"noon":h>=16&&h
 document.getElementById("bg").innerHTML=buildScene(T,"clear",400,520,{v:[2,3,4,5,6,7,8,10][Math.floor(Math.random()*8)],mx:330,my:-220}).replace('viewBox="0 0 400 520" preserveAspectRatio="xMidYMax slice"','viewBox="0 -300 400 820" preserveAspectRatio="xMidYMax slice"');
 </script>
 <script type="module">
-import {Conversation} from "https://esm.sh/@elevenlabs/client@0";
+import {Conversation} from "https://esm.sh/@elevenlabs/client@0.16.0";
 const AGENT="agent_6201m756kkxcfras076gftsn0bvd";
 const SITE="https://claude.ai/artifact/9wV8sXe3gEaDsnCYraezZ7";
 const q=new URLSearchParams(location.search);
-const parent=q.get("parent")||"לא ידוע",hello=q.get("hello")||"היי, מי איתי – רן או טל?";
+const P0=q.get("parent"),parent=P0==="רן"||P0==="טל"?P0:"לא ידוע",hello=parent==="לא ידוע"?"היי, מי איתי – רן או טל?":"היי "+parent+", מה קורה?";
+const K0=q.get("k")||"",FK=/^[A-Za-z0-9]{20,64}$/.test(K0)?K0:"";
 const $=id=>document.getElementById(id),B=document.body;
 $("back").onclick=e=>{e.preventDefault();goBack()};
 let conv=null,t0=0,tmr=0,raf=0,ended=false;
@@ -272,9 +273,10 @@ function levels(){if(!conv)return;const bars=[...$("bars").children];
     else if(B.classList.contains("speaking")){const v=conv.getOutputVolume?conv.getOutputVolume():0;$("core").style.transform="scale("+(0.9+Math.min(.35,v*.8))+")"}}catch(_){}
   raf=requestAnimationFrame(levels)}
 async function start(){
+  if(!FK){setMode("idle");$("st").textContent="פותחים את השיחה מתוך האפליקציה";$("cap").textContent="";return}
   setMode("conn");$("st").textContent="מתחברת…";$("cap").textContent="";
   try{
-    conv=await Conversation.startSession({agentId:AGENT,connectionType:"webrtc",dynamicVariables:{parent,hello},
+    conv=await Conversation.startSession({agentId:AGENT,connectionType:"webrtc",dynamicVariables:{parent,hello,fk:FK},
       onConnect:()=>{t0=Date.now();tick();tmr=setInterval(tick,1000);setMode("speaking");$("st").textContent="היועצת מדברת";levels()},
       onModeChange:({mode})=>{if(ended)return;if(mode==="speaking"){setMode("speaking");$("st").textContent="היועצת מדברת";$("core").style.transform=""}else{setMode("listening");$("st").textContent="מקשיבה לך";$("core").style.transform=""}},
       
