@@ -264,7 +264,7 @@ const $=id=>document.getElementById(id),B=document.body;
 $("back").onclick=e=>{e.preventDefault();goBack()};
 let conv=null,t0=0,tmr=0,raf=0,ended=false;
 let wl=null;
-async function wake(){try{if(!ended&&conv&&navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null})}}catch(_){}}
+async function wake(){try{if(!ended&&t0&&navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null})}}catch(_){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")wake()});
 function setMode(m){B.className=m}
 function goBack(){try{window.close()}catch(_){}setTimeout(()=>{$("prog").textContent="אפשר לסגור את החלון ולחזור ללילה טוב";$("back").textContent="סגירה"},400)}
