@@ -264,11 +264,14 @@ const $=id=>document.getElementById(id),B=document.body;
 $("back").onclick=e=>{e.preventDefault();goBack()};
 let conv=null,t0=0,tmr=0,raf=0,ended=false;
 let wl=null;
-async function wake(){try{if(!ended&&t0&&navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null})}}catch(_){}}
+let kv=null;
+function keepVid(on){try{if(on){if(!kv){kv=document.createElement("video");kv.src="keepawake.mp4";kv.muted=true;kv.loop=true;kv.setAttribute("playsinline","");kv.setAttribute("muted","");kv.style.cssText="position:fixed;width:1px;height:1px;opacity:.01;pointer-events:none;bottom:0;left:0";document.body.appendChild(kv)}kv.play().catch(()=>{})}else if(kv){kv.pause()}}catch(_){}}
+async function wake(){if(ended)return;keepVid(true);try{if(navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null})}}catch(_){}}
+["touchstart","click"].forEach(t=>document.addEventListener(t,()=>{if(t0&&!ended)wake()},{passive:true}));
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")wake()});
 function setMode(m){B.className=m}
 function goBack(){try{window.close()}catch(_){}setTimeout(()=>{$("prog").textContent="אפשר לסגור את החלון ולחזור ללילה טוב";$("back").textContent="סגירה"},400)}
-function finish(){if(ended)return;ended=true;try{wl&&wl.release()}catch(_){}wl=null;clearInterval(tmr);cancelAnimationFrame(raf);setMode("done");$("st").textContent="השיחה הסתיימה";$("cap").textContent="";
+function finish(){if(ended)return;ended=true;try{wl&&wl.release()}catch(_){}wl=null;keepVid(false);clearInterval(tmr);cancelAnimationFrame(raf);setMode("done");$("st").textContent="השיחה הסתיימה";$("cap").textContent="";
   $("prog").textContent="";setTimeout(goBack,1500)}
 function tick(){const s=Math.floor((Date.now()-t0)/1000);$("tm").textContent=Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 function levels(){if(!conv)return;const bars=[...$("bars").children];
@@ -288,7 +291,7 @@ async function start(){
       onError:(e)=>{console.error(e)}});
   }catch(e){console.error(e);setMode("idle");$("st").textContent=e&&e.name==="NotAllowedError"?"צריך לאשר את המיקרופון – לחצו כדי לנסות שוב":"לחצו על העיגול כדי להתחיל";}
 }
-$("orb").onclick=()=>{if(B.classList.contains("idle"))start()};
+$("orb").onclick=()=>{keepVid(true);if(B.classList.contains("idle"))start()};
 $("end").onclick=async()=>{try{await conv?.endSession()}catch(_){}finish()};
 start();
 </script><script>["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});</script></body></html>
