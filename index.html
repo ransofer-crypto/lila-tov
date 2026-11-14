@@ -263,9 +263,12 @@ const K0=q.get("k")||"",FK=/^[A-Za-z0-9]{20,64}$/.test(K0)?K0:"";
 const $=id=>document.getElementById(id),B=document.body;
 $("back").onclick=e=>{e.preventDefault();goBack()};
 let conv=null,t0=0,tmr=0,raf=0,ended=false;
+let wl=null;
+async function wake(){try{if(!ended&&conv&&navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null})}}catch(_){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")wake()});
 function setMode(m){B.className=m}
 function goBack(){try{window.close()}catch(_){}setTimeout(()=>{$("prog").textContent="אפשר לסגור את החלון ולחזור ללילה טוב";$("back").textContent="סגירה"},400)}
-function finish(){if(ended)return;ended=true;clearInterval(tmr);cancelAnimationFrame(raf);setMode("done");$("st").textContent="השיחה הסתיימה";$("cap").textContent="";
+function finish(){if(ended)return;ended=true;try{wl&&wl.release()}catch(_){}wl=null;clearInterval(tmr);cancelAnimationFrame(raf);setMode("done");$("st").textContent="השיחה הסתיימה";$("cap").textContent="";
   $("prog").textContent="";setTimeout(goBack,1500)}
 function tick(){const s=Math.floor((Date.now()-t0)/1000);$("tm").textContent=Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 function levels(){if(!conv)return;const bars=[...$("bars").children];
@@ -278,7 +281,7 @@ async function start(){
   setMode("conn");$("st").textContent="מתחברת…";$("cap").textContent="";
   try{
     conv=await Conversation.startSession({agentId:AGENT,connectionType:"webrtc",dynamicVariables:{parent,hello,fk:FK},
-      onConnect:()=>{t0=Date.now();tick();tmr=setInterval(tick,1000);setMode("speaking");$("st").textContent="היועצת מדברת";levels()},
+      onConnect:()=>{t0=Date.now();wake();tick();tmr=setInterval(tick,1000);setMode("speaking");$("st").textContent="היועצת מדברת";levels()},
       onModeChange:({mode})=>{if(ended)return;if(mode==="speaking"){setMode("speaking");$("st").textContent="היועצת מדברת";$("core").style.transform=""}else{setMode("listening");$("st").textContent="מקשיבה לך";$("core").style.transform=""}},
       
       onDisconnect:()=>finish(),
